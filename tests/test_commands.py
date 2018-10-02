@@ -1603,7 +1603,7 @@ class TestRedisCommands(object):
 
 class TestStrictCommands(object):
 
-    @skip_if_server_version_lt('6.0.0')
+    @skip_if_server_version_lt('5.0.0')
     def test_strict_xrange(self, sr):
         varname = 'xrange_test'
         sr.delete(varname)
