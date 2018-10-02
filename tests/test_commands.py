@@ -1637,7 +1637,7 @@ class TestStrictCommands(object):
         results = sr.xrange(varname, finish=stamp2, count=1)
         assert get_ids(results) == [stamp1]
 
-        results = sr.xrevrange(varname, start=stamp1)
+        results = sr.xrevrange(varname, start=stamp4)
         assert get_ids(results) == [stamp4, stamp3, stamp2, stamp1]
 
         results = sr.xrevrange(varname, start=stamp3, finish=stamp2)
