@@ -7,8 +7,9 @@ python:
   - "3.3"
   - "2.7"
   - "2.6"
-services:
-  - redis-server
+before_install:
+  - wget https://github.com/antirez/redis/archive/5.0-rc5.tar.gz && tar -xvzf 5.0-rc5.tar.gz && cd redis-5.0-rc5 && make && src/redis-server --daemonize yes && cd ..
+  - redis-cli info
 env:
   - TEST_HIREDIS=0
   - TEST_HIREDIS=1
