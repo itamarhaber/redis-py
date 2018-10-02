@@ -1615,7 +1615,7 @@ class TestStrictCommands(object):
         assert stamp1 != stamp2
 
         milli, offset = stamp2.decode('utf-8').split('-')
-        new_id = ("%s-0" % (milli + 10000)).encode('utf-8')
+        new_id = "{}-0".format(int(milli) + 10000).encode('utf-8')
         stamp3 = sr.xadd(varname, id=new_id, foo="bar")
         assert sr.xlen(varname) == 3
         assert stamp3 == new_id
