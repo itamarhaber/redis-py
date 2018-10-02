@@ -1603,7 +1603,7 @@ class TestRedisCommands(object):
 
 class TestStrictCommands(object):
 
-    @skip_if_server_version_lt('5.0.0')
+    @skip_if_server_version_lt('4.9.105')
     def test_strict_xrange(self, sr):
         varname = 'xrange_test'
         sr.delete(varname)
@@ -1651,7 +1651,7 @@ class TestStrictCommands(object):
 
         assert sr.xlen(varname) == 4
 
-    @skip_if_server_version_lt('5.0.0')
+    @skip_if_server_version_lt('4.9.105')
     def test_strict_xread(self, sr):
         varname = 'xread_test'
         sr.delete(varname)
@@ -1665,7 +1665,7 @@ class TestStrictCommands(object):
         results = sr.xread(count=3, block=0, **{varname: stamp1})
         assert results[varname][0][0] == stamp2
 
-    @skip_if_server_version_lt('5.0.0')
+    @skip_if_server_version_lt('4.9.105') # basically 5
     def test_strict_xgroup(self, sr):
         stream_name = 'xgroup_test_stream'
         sr.delete(stream_name)
