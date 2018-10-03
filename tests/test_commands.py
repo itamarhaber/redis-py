@@ -1615,7 +1615,7 @@ class TestStrictCommands(object):
         assert stamp1 != stamp2
 
         milli, offset = stamp2.decode('utf-8').split('-')
-        new_id = "{}-0".format(int(milli) + 10000).encode('utf-8')
+        new_id = "{0}-0".format(int(milli) + 10000).encode('utf-8')
         stamp3 = sr.xadd(varname, id=new_id, foo="bar")
         assert sr.xlen(varname) == 3
         assert stamp3 == new_id
@@ -1670,26 +1670,26 @@ class TestStrictCommands(object):
         stream_name = 'xgroup_test_stream'
         sr.delete(stream_name)
         group_name = 'xgroup_test_group'
-        try:
-            sr.xgroup_destroy(name=stream_name, groupname=group_name)
-        except redis.ResponseError:
-            pass
 
-        with pytest.raises(redis.ResponseError):
-            sr.xgroup_create(name=stream_name, groupname=group_name, id='$')
-        stamp1 = sr.xadd(stream_name, name="marco", other="polo")
+        stamp1 = sr.xadd(stream_name, name="boaty", other="mcboatface")
+        assert stamp1 in sr.xinfo_stream(name=stream_name)[b('first-entry')]
+
+        assert sr.xinfo_groups(name=stream_name) == []
         assert sr.xgroup_create(name=stream_name, groupname=group_name, id='$')
+        assert sr.xinfo_groups(name=stream_name)[0][b('name')] == b(group_name)
 
         with pytest.raises(redis.ResponseError):
             sr.xgroup_setid(name='nosuchstream', groupname=group_name, id='0')
         with pytest.raises(redis.ResponseError):
             sr.xgroup_setid(name=stream_name, groupname='nosuchgroup', id='0')
+        assert sr.xinfo_groups(name=stream_name)[0][b('last-delivered-id')] == b(stamp1)
         assert sr.xgroup_setid(name=stream_name, groupname=group_name, id='0')
+        assert sr.xinfo_groups(name=stream_name)[0][b('last-delivered-id')] == b('0-0')
 
         # TODO: test xgroup_delconsumer after implementing XREADGROUP
 
         assert sr.xgroup_destroy(name=stream_name, groupname=group_name) == 1
-        assert sr.xgroup_destroy(name=stream_name, groupname=group_name) == 0
+        assert sr.xinfo_groups(name=stream_name) == []
 
     def test_strict_zadd(self, sr):
         sr.zadd('a', 1.0, 'a1', 2.0, 'a2', a3=3.0)
