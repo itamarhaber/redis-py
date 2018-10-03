@@ -1869,23 +1869,25 @@ class StrictRedis(object):
     def xgroup_delconsumer(self, name, groupname, consumername):
         """
         Remove a specific consumer from a consumer group.
-        Returns the number of pending messages that the consumer had before it was deleted.
+        Returns the number of pending messages that the consumer had before it
+        was deleted.
         name: name of the stream.
         groupname: name of the consumer group.
         consumername: name of consumer to delete
         """
-        return self.execute_command('XGROUP DELCONSUMER', name, groupname, consumername)
+        return self.execute_command('XGROUP DELCONSUMER', name, groupname,
+                                    consumername)
 
     def xinfo_stream(self, name):
         """
-        Returns general information about the stream stored at the specified key.
+        Returns general information about the stream.
         name: name of the stream.
         """
         return self.execute_command('XINFO STREAM', name)
 
     def xinfo_consumers(self, name, groupname):
         """
-        Returns general information about the stream stored at the specified key.
+        Returns general information about the consumers in the group.
         name: name of the stream.
         groupname: name of the consumer group.
         """
@@ -1893,7 +1895,7 @@ class StrictRedis(object):
 
     def xinfo_groups(self, name):
         """
-        Returns general information about the stream stored at the specified key.
+        Returns general information about the consumer groups of the stream.
         name: name of the stream.
         """
         return self.execute_command('XINFO GROUPS', name)

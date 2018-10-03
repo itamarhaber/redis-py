@@ -1682,9 +1682,11 @@ class TestStrictCommands(object):
             sr.xgroup_setid(name='nosuchstream', groupname=group_name, id='0')
         with pytest.raises(redis.ResponseError):
             sr.xgroup_setid(name=stream_name, groupname='nosuchgroup', id='0')
-        assert sr.xinfo_groups(name=stream_name)[0][b('last-delivered-id')] == b(stamp1)
+        assert sr.xinfo_groups(name=stream_name)[0][b('last-delivered-id')] \
+               == b(stamp1)
         assert sr.xgroup_setid(name=stream_name, groupname=group_name, id='0')
-        assert sr.xinfo_groups(name=stream_name)[0][b('last-delivered-id')] == b('0-0')
+        assert sr.xinfo_groups(name=stream_name)[0][b('last-delivered-id')]\
+               == b('0-0')
 
         # TODO: test xgroup_delconsumer after implementing XREADGROUP
 
