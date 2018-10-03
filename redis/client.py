@@ -250,6 +250,28 @@ def stream_list(response):
     return result
 
 
+def parse_xinfo_dict(response):
+    if response is None:
+        return None
+    result = {}
+    while response:
+        k = response.pop(0)
+        v = response.pop(0)
+        if isinstance(v, list):
+            v = parse_xinfo_dict(v)
+        result[k] = v
+    return result
+
+
+def parse_xinfo_list(response):
+    if response is None:
+        return None
+    result = []
+    for group in response:
+        result.append(parse_xinfo_dict(group))
+    return result
+
+
 def multi_stream_list(response):
     if response is None:
         return None
@@ -405,6 +427,11 @@ class StrictRedis(object):
             'XGROUP SETID': bool_ok,
             'XGROUP DELCONSUMER': int
          },
+        {
+            'XINFO STREAM': parse_xinfo_dict,
+            'XINFO CONSUMERS': parse_xinfo_list,
+            'XINFO GROUPS': parse_xinfo_list
+        },
         string_keys_to_dict(
             'INCRBYFLOAT HINCRBYFLOAT GEODIST',
             float
@@ -1848,6 +1875,28 @@ class StrictRedis(object):
         consumername: name of consumer to delete
         """
         return self.execute_command('XGROUP DELCONSUMER', name, groupname, consumername)
+
+    def xinfo_stream(self, name):
+        """
+        Returns general information about the stream stored at the specified key.
+        name: name of the stream.
+        """
+        return self.execute_command('XINFO STREAM', name)
+
+    def xinfo_consumers(self, name, groupname):
+        """
+        Returns general information about the stream stored at the specified key.
+        name: name of the stream.
+        groupname: name of the consumer group.
+        """
+        return self.execute_command('XINFO CONSUMERS', name, groupname)
+
+    def xinfo_groups(self, name):
+        """
+        Returns general information about the stream stored at the specified key.
+        name: name of the stream.
+        """
+        return self.execute_command('XINFO GROUPS', name)
 
     # SORTED SET COMMANDS
     def zadd(self, name, *args, **kwargs):
