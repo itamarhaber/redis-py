@@ -1665,7 +1665,7 @@ class TestStrictCommands(object):
         results = sr.xread(count=3, block=0, **{varname: stamp1})
         assert results[varname][0][0] == stamp2
 
-    @skip_if_server_version_lt('4.9.105')  # basically 5
+    @skip_if_server_version_lt('4.9.105') # basically 5
     def test_strict_xgroup(self, sr):
         stream_name = 'xgroup_test_stream'
         sr.delete(stream_name)
@@ -1682,13 +1682,20 @@ class TestStrictCommands(object):
             sr.xgroup_setid(name='nosuchstream', groupname=group_name, id='0')
         with pytest.raises(redis.ResponseError):
             sr.xgroup_setid(name=stream_name, groupname='nosuchgroup', id='0')
-        assert sr.xinfo_groups(name=stream_name)[0][b('last-delivered-id')] \
-            == b(stamp1)
-        assert sr.xgroup_setid(name=stream_name, groupname=group_name, id='0')
-        assert sr.xinfo_groups(name=stream_name)[0][b('last-delivered-id')]\
-            == b('0-0')
 
-        # TODO: test xgroup_delconsumer after implementing XREADGROUP
+        assert sr.xinfo_groups(name=stream_name)[0][
+                   b('last-delivered-id')] == b(stamp1)
+        assert sr.xgroup_setid(name=stream_name, groupname=group_name, id='0')
+        assert sr.xinfo_groups(name=stream_name)[0][
+                   b('last-delivered-id')] == b('0-0')
+
+        consumer_name = 'captain_jack_sparrow'
+        assert sr.xreadgroup(groupname=group_name, consumername=consumer_name,
+                             streams={stream_name: '0'}) == {}
+
+        assert sr.xinfo_groups(name=stream_name)[0][b('consumers')] == 1
+        sr.xgroup_delconsumer(stream_name, group_name, consumer_name)
+        assert sr.xinfo_groups(name=stream_name)[0][b('consumers')] == 0
 
         assert sr.xgroup_destroy(name=stream_name, groupname=group_name) == 1
         assert sr.xinfo_groups(name=stream_name) == []

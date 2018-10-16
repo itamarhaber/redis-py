@@ -21,6 +21,6 @@ script: "if [[ $TEST_PEP8 == '1' ]]; then pycodestyle --repeat --show-source --e
 matrix:
   include:
     - python: "2.7"
-      env: TEST_PEP8=1
+      env: TEST_PYCODESTYLE=1
     - python: "3.6"
-      env: TEST_PEP8=1
+      env: TEST_PYCODESTYLE=1
